@@ -9,7 +9,6 @@ internal class SieveOfEratosthenesTest {
     @Test
     fun correctTest() {
         assertArrayEquals(intArrayOf(2, 3, 5), sieveOfEratosthenes(5).toIntArray())
-
     }
 
     @Test
