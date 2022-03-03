@@ -2,6 +2,7 @@ package homeworks.homework1
 
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 internal class SieveOfEratosthenesTest {
 
@@ -29,6 +30,6 @@ internal class SieveOfEratosthenesTest {
 
     @Test
     fun testWithNegativeNumber() {
-        assertArrayEquals(intArrayOf(), sieveOfEratosthenes(-1).toIntArray())
+        assertThrows<IllegalArgumentException> { sieveOfEratosthenes(-1) }
     }
 }

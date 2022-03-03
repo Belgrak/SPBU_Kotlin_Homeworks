@@ -2,6 +2,7 @@ package homeworks.homework1
 
 fun sieveOfEratosthenes(n: Int): List<Int> {
     require(n >= 0) { "Number must be non-negative, was $n" }
+    if (n == 0) return emptyList()
     val isPrimeNumber = BooleanArray(n + 1) { true }
     isPrimeNumber[0] = false
     isPrimeNumber[1] = false
