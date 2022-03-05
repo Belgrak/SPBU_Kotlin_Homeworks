@@ -5,9 +5,11 @@ fun sieveOfEratosthenes(n: Int): List<Int> {
     if (n == 0) {
         return emptyList()
     }
-    val isPrimeNumber = BooleanArray(n + 1) { true }.toTypedArray()
+
+    val isPrimeNumber = MutableList(n + 1) { true }
     isPrimeNumber[0] = false
     isPrimeNumber[1] = false
+
     for (i in 2..n) {
         if (isPrimeNumber[i]) {
             for (j in (i * i)..n step i) {
@@ -15,7 +17,7 @@ fun sieveOfEratosthenes(n: Int): List<Int> {
             }
         }
     }
-    return isPrimeNumber.mapIndexedNotNull { index, b -> if (b) index else null }
+    return isPrimeNumber.mapIndexedNotNull { index, numIsPrime -> if (numIsPrime) index else null }
 }
 
 fun main() {
@@ -25,6 +27,7 @@ fun main() {
         print("Integer was expected")
         return
     }
+
     try {
         val result = sieveOfEratosthenes(num)
         if (result.isEmpty()) {

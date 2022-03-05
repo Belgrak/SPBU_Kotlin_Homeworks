@@ -2,7 +2,6 @@ package homeworks.homework1
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertFailsWith
 
 internal class SieveOfEratosthenesTest {
@@ -31,10 +30,7 @@ internal class SieveOfEratosthenesTest {
 
     @Test
     fun testWithNegativeNumber() {
-        assertFailsWith<IllegalArgumentException>(
-            message = "Number must be non-negative, was -1",
-            block = { sieveOfEratosthenes(-1) }
-        )
-        assertThrows<IllegalArgumentException> { sieveOfEratosthenes(-1) }
+        val exception = assertFailsWith<IllegalArgumentException> { sieveOfEratosthenes(-42) }
+        assertEquals("Number must be non-negative, was -42", exception.message)
     }
 }
