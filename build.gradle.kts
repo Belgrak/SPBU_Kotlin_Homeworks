@@ -12,6 +12,8 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("test"))
+    implementation("org.testng:testng:7.1.0")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
