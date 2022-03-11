@@ -5,24 +5,13 @@ class PerformedCommandStorage {
     val listOfInts = mutableListOf<Int>()
 
     fun addAction(action: Action) {
+        action.doAction()
         listOfActions.add(action)
     }
 
     fun removeAction() {
-        if (listOfActions.isEmpty()) {
-            throw NoSuchElementException("There aren't any actions")
-        }
-        val currentElement = listOfActions.last()
-        when (currentElement.type) {
-            ActionType.ADDFIRST -> currentElement.listOfInts.removeAt(0)
-            ActionType.ADDLAST -> currentElement.listOfInts.removeAt(currentElement.listOfInts.size - 1)
-            ActionType.SHIFT -> Action(
-                currentElement.listOfInts,
-                ActionType.SHIFT,
-                currentElement.secondArgument,
-                currentElement.firstArgument
-            )
-        }
+        require(listOfActions.isNotEmpty()) { "There aren't any actions" }
+        listOfActions.last().cancelAction()
         listOfActions.removeAt(listOfActions.lastIndex)
     }
 }

@@ -2,27 +2,46 @@ package homeworks.homework1
 
 import java.util.Collections
 
-enum class ActionType {
-    ADDFIRST, ADDLAST, SHIFT
+interface Action {
+    fun doAction()
+    fun cancelAction()
 }
 
-class Action(list: MutableList<Int>, actionType: ActionType, firstArg: Int, secondArg: Int = -1) {
-    val type = actionType
-    val listOfInts = list
-    val firstArgument = firstArg
-    val secondArgument = secondArg
+class AddFirst(private val listOfInts: MutableList<Int>, private val listOfArguments: List<Int>) : Action {
+    override fun doAction() {
+        listOfInts.add(0, listOfArguments[0])
+    }
 
-    init {
-        when (type) {
-            ActionType.ADDFIRST -> list.add(0, firstArgument)
-            ActionType.ADDLAST -> list.add(list.size, firstArgument)
-            ActionType.SHIFT -> {
-                require(firstArg in list.indices && secondArg in list.indices) { "Index/Indices out of range" }
-                val sign = if (firstArgument <= secondArgument) 1 else -1
-                for (i in 1..kotlin.math.abs(secondArgument - firstArgument)) {
-                    Collections.swap(list, firstArgument + sign * (i - 1), firstArgument + sign * i)
-                }
-            }
+    override fun cancelAction() {
+        listOfInts.removeAt(0)
+    }
+}
+
+class AddLast(private val listOfInts: MutableList<Int>, private val listOfArguments: List<Int>) : Action {
+    override fun doAction() {
+        listOfInts.add(listOfInts.size, listOfArguments[0])
+    }
+
+    override fun cancelAction() {
+        listOfInts.removeAt(listOfInts.size)
+    }
+}
+
+class Shift(private val listOfInts: MutableList<Int>, private val listOfArguments: List<Int>) : Action {
+    override fun doAction() {
+        require(listOfArguments.size >= 2) { "Too few arguments" }
+        val aIndex = listOfArguments[0]
+        val bIndex = listOfArguments[1]
+        require(aIndex in listOfInts.indices && bIndex in listOfInts.indices) { "Index/Indices out of range" }
+
+        val sign = if (aIndex <= bIndex) 1 else -1
+        for (i in 1..kotlin.math.abs(aIndex - bIndex)) {
+            Collections.swap(listOfInts, aIndex + sign * (i - 1), aIndex + sign * i)
         }
+    }
+
+    override fun cancelAction() {
+        Collections.swap(listOfArguments, 0, 1)
+        doAction()
     }
 }

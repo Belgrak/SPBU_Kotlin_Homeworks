@@ -11,7 +11,7 @@ internal class PerformedCommandStorageTest {
     @BeforeEach
     fun setup() {
         for (i in 0..10) {
-            commandStorage.addAction(Action(commandStorage.listOfInts, ActionType.ADDLAST, i))
+            commandStorage.addAction(AddLast(commandStorage.listOfInts, listOf(i)))
         }
     }
 
@@ -22,26 +22,26 @@ internal class PerformedCommandStorageTest {
 
     @Test
     fun addFirstElement() {
-        commandStorage.addAction(Action(commandStorage.listOfInts, ActionType.ADDFIRST, -1))
+        commandStorage.addAction(AddFirst(commandStorage.listOfInts, listOf(-1)))
         assertEquals(listOf(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), commandStorage.listOfInts)
     }
 
     @Test
     fun shift() {
-        commandStorage.addAction(Action(commandStorage.listOfInts, ActionType.SHIFT, 0, 10))
+        commandStorage.addAction(Shift(commandStorage.listOfInts, listOf(0, 10)))
         assertEquals(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0), commandStorage.listOfInts)
     }
 
     @Test
     fun reverseShift() {
-        commandStorage.addAction(Action(commandStorage.listOfInts, ActionType.SHIFT, 0, 10))
+        commandStorage.addAction(Shift(commandStorage.listOfInts, listOf(0, 10)))
         commandStorage.removeAction()
         assertEquals(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), commandStorage.listOfInts)
     }
 
     @Test
     fun removeFirstElement() {
-        commandStorage.addAction(Action(commandStorage.listOfInts, ActionType.ADDFIRST, -1))
+        commandStorage.addAction(AddFirst(commandStorage.listOfInts, listOf(-1)))
         commandStorage.removeAction()
         assertEquals(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), commandStorage.listOfInts)
     }
@@ -50,11 +50,9 @@ internal class PerformedCommandStorageTest {
     fun shiftOutOfRange() {
         val exception = assertFailsWith<IllegalArgumentException> {
             commandStorage.addAction(
-                Action(
+                Shift(
                     commandStorage.listOfInts,
-                    ActionType.SHIFT,
-                    0,
-                    100
+                    listOf(0, 100)
                 )
             )
         }
@@ -63,7 +61,7 @@ internal class PerformedCommandStorageTest {
 
     @Test
     fun reverseFromEmptyList() {
-        val exception = assertFailsWith<NoSuchElementException> {
+        val exception = assertFailsWith<IllegalArgumentException> {
             PerformedCommandStorage().removeAction()
         }
         assertEquals(exception.message, "There aren't any actions")

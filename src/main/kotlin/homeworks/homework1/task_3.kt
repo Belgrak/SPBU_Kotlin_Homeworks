@@ -1,16 +1,16 @@
 package homeworks.homework1
 
 fun addFirst(commandStorage: PerformedCommandStorage, list: MutableList<Int>, element: Int) {
-    commandStorage.addAction(Action(list, ActionType.ADDFIRST, element))
+    commandStorage.addAction(AddFirst(list, listOf(element)))
 }
 
 fun addLast(commandStorage: PerformedCommandStorage, list: MutableList<Int>, element: Int) {
-    commandStorage.addAction(Action(list, ActionType.ADDLAST, element))
+    commandStorage.addAction(AddLast(list, listOf(element)))
 }
 
 fun shift(commandStorage: PerformedCommandStorage, list: MutableList<Int>, elementA: Int, elementB: Int) {
     try {
-        commandStorage.addAction(Action(list, ActionType.SHIFT, elementA, elementB))
+        commandStorage.addAction(Shift(list, listOf(elementA, elementB)))
     } catch (e: IllegalArgumentException) {
         println(e.message)
     }
@@ -31,16 +31,22 @@ fun commandHandler(
     firstArgument: Int?,
     secondArgument: Int?
 ) {
-    when (command) {
-        "addFirst" -> firstArgument?.let { addFirst(commandStorage, listOfInts, it) }
-        "addLast" -> firstArgument?.let { addLast(commandStorage, listOfInts, it) }
-        "shift" -> firstArgument?.let { first ->
+    // here was 'when' expression, but I decide to turn it into map
+    // Maybe it is strange and bad decision, because of using memory:)
+    val mapOfCommands = mapOf(
+        "addFirst" to firstArgument?.let { addFirst(commandStorage, listOfInts, it) },
+        "addLast" to firstArgument?.let { addLast(commandStorage, listOfInts, it) },
+        "shift" to firstArgument?.let { first ->
             secondArgument?.let { second -> shift(commandStorage, listOfInts, first, second) }
-        }
-        "reverse" -> reverse(commandStorage)
-        "print" -> println(listOfInts)
-        else -> println("Unknown command")
+        },
+        "reverse" to reverse(commandStorage),
+        "print" to println(listOfInts)
+    )
+    if (command !in mapOfCommands.keys) {
+        println("Unknown command")
+        return
     }
+    mapOfCommands[command]
 }
 
 fun main() {
@@ -80,7 +86,6 @@ fun main() {
                 }
             }
         }
-
         if (firstArgument == null || secondArgument == null) {
             println("Invalid arguments. Please enter again")
             continue
