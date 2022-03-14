@@ -11,7 +11,6 @@ class PerformedCommandStorage {
 
     fun removeAction() {
         require(listOfActions.isNotEmpty()) { "There aren't any actions" }
-        listOfActions.last().cancelAction()
-        listOfActions.removeAt(listOfActions.lastIndex)
+        listOfActions.removeLast().cancelAction()
     }
 }

@@ -11,7 +11,7 @@ internal class PerformedCommandStorageTest {
     @BeforeEach
     fun setup() {
         for (i in 0..10) {
-            commandStorage.addAction(AddLast(commandStorage.listOfInts, listOf(i)))
+            commandStorage.addAction(AddLast(commandStorage.listOfInts, i))
         }
     }
 
@@ -22,26 +22,26 @@ internal class PerformedCommandStorageTest {
 
     @Test
     fun addFirstElement() {
-        commandStorage.addAction(AddFirst(commandStorage.listOfInts, listOf(-1)))
+        commandStorage.addAction(AddFirst(commandStorage.listOfInts, -1))
         assertEquals(listOf(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), commandStorage.listOfInts)
     }
 
     @Test
     fun shift() {
-        commandStorage.addAction(Shift(commandStorage.listOfInts, listOf(0, 10)))
+        commandStorage.addAction(Shift(commandStorage.listOfInts, 0, 10))
         assertEquals(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0), commandStorage.listOfInts)
     }
 
     @Test
     fun reverseShift() {
-        commandStorage.addAction(Shift(commandStorage.listOfInts, listOf(0, 10)))
+        commandStorage.addAction(Shift(commandStorage.listOfInts, 0, 10))
         commandStorage.removeAction()
         assertEquals(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), commandStorage.listOfInts)
     }
 
     @Test
     fun removeFirstElement() {
-        commandStorage.addAction(AddFirst(commandStorage.listOfInts, listOf(-1)))
+        commandStorage.addAction(AddFirst(commandStorage.listOfInts, -1))
         commandStorage.removeAction()
         assertEquals(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), commandStorage.listOfInts)
     }
@@ -52,7 +52,7 @@ internal class PerformedCommandStorageTest {
             commandStorage.addAction(
                 Shift(
                     commandStorage.listOfInts,
-                    listOf(0, 100)
+                    0, 100
                 )
             )
         }

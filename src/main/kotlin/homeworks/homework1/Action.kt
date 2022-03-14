@@ -1,47 +1,37 @@
 package homeworks.homework1
 
-import java.util.Collections
-
 interface Action {
     fun doAction()
     fun cancelAction()
 }
 
-class AddFirst(private val listOfInts: MutableList<Int>, private val listOfArguments: List<Int>) : Action {
+class AddFirst(private val listOfInts: MutableList<Int>, private val element: Int) : Action {
     override fun doAction() {
-        listOfInts.add(0, listOfArguments[0])
+        listOfInts.add(0, element)
     }
 
     override fun cancelAction() {
-        listOfInts.removeAt(0)
+        listOfInts.removeFirst()
     }
 }
 
-class AddLast(private val listOfInts: MutableList<Int>, private val listOfArguments: List<Int>) : Action {
+class AddLast(private val listOfInts: MutableList<Int>, private val element: Int) : Action {
     override fun doAction() {
-        listOfInts.add(listOfInts.size, listOfArguments[0])
+        listOfInts.add(element)
     }
 
     override fun cancelAction() {
-        listOfInts.removeAt(listOfInts.size)
+        listOfInts.removeLast()
     }
 }
 
-class Shift(private val listOfInts: MutableList<Int>, private val listOfArguments: List<Int>) : Action {
+class Shift(private val listOfInts: MutableList<Int>, private val indexFrom: Int, private val indexTo: Int) : Action {
     override fun doAction() {
-        require(listOfArguments.size >= 2) { "Too few arguments" }
-        val aIndex = listOfArguments[0]
-        val bIndex = listOfArguments[1]
-        require(aIndex in listOfInts.indices && bIndex in listOfInts.indices) { "Index/Indices out of range" }
-
-        val sign = if (aIndex <= bIndex) 1 else -1
-        for (i in 1..kotlin.math.abs(aIndex - bIndex)) {
-            Collections.swap(listOfInts, aIndex + sign * (i - 1), aIndex + sign * i)
-        }
+        require(indexFrom in listOfInts.indices && indexTo in listOfInts.indices) { "Index/Indices out of range" }
+        listOfInts.add(indexTo, listOfInts.removeAt(indexFrom))
     }
 
     override fun cancelAction() {
-        Collections.swap(listOfArguments, 0, 1)
-        doAction()
+        listOfInts.add(indexFrom, listOfInts.removeAt(indexTo))
     }
 }
