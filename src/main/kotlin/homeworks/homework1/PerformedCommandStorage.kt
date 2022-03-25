@@ -5,12 +5,12 @@ class PerformedCommandStorage {
     val listOfInts = mutableListOf<Int>()
 
     fun addAction(action: Action) {
-        action.doAction()
+        action.doAction(listOfInts)
         listOfActions.add(action)
     }
 
     fun removeAction() {
         require(listOfActions.isNotEmpty()) { "There aren't any actions" }
-        listOfActions.removeLast().cancelAction()
+        listOfActions.removeLast().cancelAction(listOfInts)
     }
 }

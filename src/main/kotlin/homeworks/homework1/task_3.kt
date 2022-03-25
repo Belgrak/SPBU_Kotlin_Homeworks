@@ -19,7 +19,9 @@ fun main() {
     var command: String
     var listOfArguments = listOf<Int>()
 
-    while (true) {
+    while (Program.isRunning()) {
+        // readline() return null, if input was interrupted
+        // if user input nothing, it will be handled as unknown command( CommandHandler.kt:24 )
         inputLine = readLine() ?: return
         inputLine.split(" ").let {
             command = it[0]
@@ -33,7 +35,12 @@ fun main() {
             println(e.message)
             continue
         }
-        commandHandler.handleCommands(commandStorage, commandStorage.listOfInts, command, listOfArguments)
+        commandHandler.handleCommands(
+            commandStorage,
+            commandStorage.listOfInts,
+            command,
+            listOfArguments
+        )
         listOfArguments = emptyList()
     }
 }

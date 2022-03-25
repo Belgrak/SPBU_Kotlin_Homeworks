@@ -1,6 +1,11 @@
 package homeworks.homework1
 
-import kotlin.system.exitProcess
+import homeworks.homework1.Program.endProgram
+
+enum class Commands(val asString: String) {
+    ADDFIRST("addFirst"), ADDLAST("addLast"), SHIFT("shift"),
+    REVERSE("reverse"), PRINT("print"), EXIT("exit")
+}
 
 class CommandHandler {
     fun handleCommands(
@@ -10,12 +15,12 @@ class CommandHandler {
         listOfArguments: List<Int>
     ) {
         when (command) {
-            "addFirst" -> addFirst(commandStorage, listOfInts, listOfArguments[0])
-            "addLast" -> addLast(commandStorage, listOfInts, listOfArguments[0])
-            "shift" -> shift(commandStorage, listOfInts, listOfArguments[0], listOfArguments[1])
-            "reverse" -> reverse(commandStorage)
-            "print" -> println(listOfInts)
-            "exit" -> exitProcess(0)
+            Commands.ADDFIRST.asString -> addFirst(commandStorage, listOfArguments[0])
+            Commands.ADDLAST.asString -> addLast(commandStorage, listOfArguments[0])
+            Commands.SHIFT.asString -> shift(commandStorage, listOfArguments[0], listOfArguments[1])
+            Commands.REVERSE.asString -> reverse(commandStorage)
+            Commands.PRINT.asString -> println(listOfInts)
+            Commands.EXIT.asString -> endProgram()
             else -> println("Unknown command")
         }
     }
@@ -28,17 +33,17 @@ class CommandHandler {
         }
     }
 
-    private fun addFirst(commandStorage: PerformedCommandStorage, list: MutableList<Int>, element: Int) {
-        commandStorage.addAction(AddFirst(list, element))
+    private fun addFirst(commandStorage: PerformedCommandStorage, element: Int) {
+        commandStorage.addAction(AddFirst(element))
     }
 
-    private fun addLast(commandStorage: PerformedCommandStorage, list: MutableList<Int>, element: Int) {
-        commandStorage.addAction(AddLast(list, element))
+    private fun addLast(commandStorage: PerformedCommandStorage, element: Int) {
+        commandStorage.addAction(AddLast(element))
     }
 
-    private fun shift(commandStorage: PerformedCommandStorage, list: MutableList<Int>, indexFrom: Int, indexTo: Int) {
+    private fun shift(commandStorage: PerformedCommandStorage, indexFrom: Int, indexTo: Int) {
         try {
-            commandStorage.addAction(Shift(list, indexFrom, indexTo))
+            commandStorage.addAction(Shift(indexFrom, indexTo))
         } catch (e: IllegalArgumentException) {
             println(e.message)
         }
