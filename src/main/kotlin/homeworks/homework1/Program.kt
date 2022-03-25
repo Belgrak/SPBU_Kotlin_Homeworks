@@ -6,9 +6,7 @@ object Program {
 
     private var status = IS_RUNNING
 
-    fun isRunning(): Boolean {
-        return status == IS_RUNNING
-    }
+    fun isRunning() = status
 
     fun endProgram() {
         status = ENDED
