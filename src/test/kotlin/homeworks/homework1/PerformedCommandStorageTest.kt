@@ -11,7 +11,7 @@ internal class PerformedCommandStorageTest {
     @BeforeEach
     fun setup() {
         for (i in 0..10) {
-            commandStorage.addAction(AddLast(commandStorage.listOfInts, i))
+            commandStorage.addAction(AddLast(i))
         }
     }
 
@@ -22,26 +22,26 @@ internal class PerformedCommandStorageTest {
 
     @Test
     fun addFirstElement() {
-        commandStorage.addAction(AddFirst(commandStorage.listOfInts, -1))
+        commandStorage.addAction(AddFirst(-1))
         assertEquals(listOf(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), commandStorage.listOfInts)
     }
 
     @Test
     fun shift() {
-        commandStorage.addAction(Shift(commandStorage.listOfInts, 0, 10))
+        commandStorage.addAction(Shift(0, 10))
         assertEquals(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0), commandStorage.listOfInts)
     }
 
     @Test
     fun reverseShift() {
-        commandStorage.addAction(Shift(commandStorage.listOfInts, 0, 10))
+        commandStorage.addAction(Shift(0, 10))
         commandStorage.removeAction()
         assertEquals(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), commandStorage.listOfInts)
     }
 
     @Test
     fun removeFirstElement() {
-        commandStorage.addAction(AddFirst(commandStorage.listOfInts, -1))
+        commandStorage.addAction(AddFirst(-1))
         commandStorage.removeAction()
         assertEquals(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), commandStorage.listOfInts)
     }
@@ -51,7 +51,6 @@ internal class PerformedCommandStorageTest {
         val exception = assertFailsWith<IllegalArgumentException> {
             commandStorage.addAction(
                 Shift(
-                    commandStorage.listOfInts,
                     0, 100
                 )
             )
