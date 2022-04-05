@@ -1,7 +1,5 @@
 package homeworks.homework1
 
-import homeworks.homework1.Program.endProgram
-
 enum class Commands(val asString: String) {
     ADDFIRST("addFirst"), ADDLAST("addLast"), SHIFT("shift"),
     REVERSE("reverse"), PRINT("print"), EXIT("exit")
@@ -13,16 +11,17 @@ class CommandHandler {
         listOfInts: MutableList<Int>,
         command: String,
         listOfArguments: List<Int>
-    ) {
+    ): Boolean {
         when (command) {
             Commands.ADDFIRST.asString -> addFirst(commandStorage, listOfArguments[0])
             Commands.ADDLAST.asString -> addLast(commandStorage, listOfArguments[0])
             Commands.SHIFT.asString -> shift(commandStorage, listOfArguments[0], listOfArguments[1])
             Commands.REVERSE.asString -> reverse(commandStorage)
             Commands.PRINT.asString -> println(listOfInts)
-            Commands.EXIT.asString -> endProgram()
+            Commands.EXIT.asString -> return false
             else -> println("Unknown command")
         }
+        return true
     }
 
     fun isValidCountOfArguments(command: String, countOfArguments: Int) {

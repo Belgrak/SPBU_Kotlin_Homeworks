@@ -18,8 +18,9 @@ fun main() {
     var inputLine: String
     var command: String
     var listOfArguments = listOf<Int>()
+    var programIsRunning = true
 
-    while (Program.isRunning()) {
+    while (programIsRunning) {
         // readline() return null, if input was interrupted
         // if user input nothing, it will be handled as unknown command( CommandHandler.kt:24 )
         inputLine = readLine() ?: return
@@ -35,7 +36,8 @@ fun main() {
             println(e.message)
             continue
         }
-        commandHandler.handleCommands(
+        // .handleCommands returns false, if user wants to finish the program
+        programIsRunning = commandHandler.handleCommands(
             commandStorage,
             commandStorage.listOfInts,
             command,
