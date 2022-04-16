@@ -6,7 +6,8 @@ class AVLTree<K : Comparable<K>, V>(
     override var size: Int = 0,
     override val values: MutableCollection<V> = mutableListOf()
 ) : Map<K, V> {
-    private var root: Node<K, V>? = null
+    var root: Node<K, V>? = null
+        private set
 
     private fun insert(node: Node<K, V>?, key: K, value: V): Node<K, V> {
         node ?: return Node(key, value)
