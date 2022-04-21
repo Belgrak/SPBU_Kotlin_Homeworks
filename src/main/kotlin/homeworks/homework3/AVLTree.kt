@@ -1,62 +1,45 @@
 package homeworks.homework3
 
-class AVLTree<K : Comparable<K>, V>(
-    override val entries: MutableSet<Map.Entry<K, V>> = mutableSetOf(),
-    override val keys: MutableSet<K> = mutableSetOf(),
-    override var size: Int = 0,
-    override val values: MutableCollection<V> = mutableListOf()
-) : Map<K, V> {
+class AVLTree<K : Comparable<K>, V> : MutableMap<K, V> {
+    override var entries: MutableSet<MutableMap.MutableEntry<K, V>> = mutableSetOf()
+    override var keys: MutableSet<K> = mutableSetOf()
+    override var values: MutableCollection<V> = mutableListOf()
+    override var size: Int = 0
+        private set
     var root: Node<K, V>? = null
         private set
 
     private fun insert(node: Node<K, V>?, key: K, value: V): Node<K, V> {
         node ?: return Node(key, value)
         when {
-            node.key > key -> node.leftChild = insert(node.leftChild, key, value)
-            node.key < key -> node.rightChild = insert(node.rightChild, key, value)
+            key < node.key -> node.leftChild = insert(node.leftChild, key, value)
+            key > node.key -> node.rightChild = insert(node.rightChild, key, value)
             else -> node.value = value
         }
         node.updateHeight()
-        return node.balance()
+        return node.rebalance()
     }
 
-    fun put(key: K, value: V) {
+    override fun put(key: K, value: V): V? {
         root = insert(root, key, value)
         keys.add(key)
         values.add(value)
         size++
-        entries.add(Node(key, value))
+        entries.add(Entry(key, value))
+        return value
     }
 
-    private fun getNewRootFromRightSubtree(rootNode: Node<K, V>): Node<K, V> {
-        val newRoot = rootNode.rightChild?.getMin() ?: rootNode
-        newRoot.leftChild = rootNode.leftChild
-        newRoot.rightChild = rootNode.rightChild?.removeMin()
-        newRoot.updateHeight()
-        return newRoot.balance()
-    }
-
-    private fun deleteNode(rootNode: Node<K, V>, key: K): Node<K, V>? {
-        when {
-            rootNode.key > key -> rootNode.leftChild = rootNode.leftChild?.let { deleteNode(it, key) }
-            rootNode.key < key -> rootNode.rightChild = rootNode.rightChild?.let { deleteNode(it, key) }
-            else -> return rootNode.rightChild?.let { getNewRootFromRightSubtree(rootNode) }
-        }
-        rootNode.updateHeight()
-        return rootNode.balance()
-    }
-
-    fun remove(key: K): Pair<K?, V?> {
+    override fun remove(key: K): V? {
         if (!containsKey(key))
-            return Pair(null, null)
-        val pair = Pair(key, get(key))
-        root = root?.let { deleteNode(it, key) }
-        keys.remove(pair.first)
-        values.remove(pair.second)
+            return null
+        val value = get(key)
+        root = root?.deleteNode(key)
+        keys.remove(key)
+        values.remove(value)
         size--
-        entries.remove(entries.find { it.key == pair.first && it.value == pair.second })
+        entries.remove(entries.find { it.key == key && it.value == value })
         root?.updateHeight()
-        return pair
+        return value
     }
 
     override fun containsKey(key: K): Boolean {
@@ -72,7 +55,7 @@ class AVLTree<K : Comparable<K>, V>(
         while (current != null) {
             current = when {
                 current.key == key -> return current.value
-                current.key > key -> current.leftChild
+                key < current.key -> current.leftChild
                 else -> current.rightChild
             }
         }
@@ -83,5 +66,17 @@ class AVLTree<K : Comparable<K>, V>(
 
     override fun toString(): String {
         return root?.toString(0) ?: "Empty tree"
+    }
+
+    override fun clear() {
+        root = null
+        size = 0
+        keys = mutableSetOf()
+        values = mutableListOf()
+        entries = mutableSetOf()
+    }
+
+    override fun putAll(from: Map<out K, V>) {
+        from.forEach { (key, value) -> put(key, value) }
     }
 }

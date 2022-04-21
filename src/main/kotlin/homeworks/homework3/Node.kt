@@ -3,12 +3,16 @@ package homeworks.homework3
 import java.lang.Integer.max
 
 class Node<K : Comparable<K>, V>(
-    override val key: K,
-    override var value: V,
-    var leftChild: Node<K, V>? = null,
+    val key: K,
+    var value: V,
+) {
+    var leftChild: Node<K, V>? = null
     var rightChild: Node<K, V>? = null
-) : Map.Entry<K, V> {
-    var height = 0
+    private var height = 1
+    private val balance: Int
+        get() = (rightChild?.height ?: 0) - (leftChild?.height ?: 0)
+    private val minNode: Node<K, V>
+        get() = leftChild?.minNode ?: this
 
     companion object SettingsAndConsts {
         const val RIGHT_SUB_BALANCE = 2
@@ -16,23 +20,8 @@ class Node<K : Comparable<K>, V>(
         const val SEPARATOR_SIGN = "--"
     }
 
-    init {
-        height = max(leftChild?.height ?: 0, rightChild?.height ?: 0) + 1
-    }
-
-    fun getMin(): Node<K, V> {
-        return this.leftChild?.getMin() ?: this
-    }
-
-    private fun getBalanceFactor(): Int {
-
-        return (rightChild?.height ?: 0) - (leftChild?.height ?: 0)
-    }
-
     fun updateHeight() {
-        val heightLeft = leftChild?.height ?: 0
-        val heightRight = rightChild?.height ?: 0
-        height = max(heightLeft, heightRight) + 1
+        height = max(leftChild?.height ?: 0, rightChild?.height ?: 0) + 1
     }
 
     private fun rotateRight(): Node<K, V> {
@@ -54,44 +43,62 @@ class Node<K : Comparable<K>, V>(
     }
 
     private fun rightSubBalance(): Node<K, V> {
-        if (this.rightChild?.getBalanceFactor() == -1) {
-            this.rightChild = this.rightChild?.rotateRight() ?: return this
+        if (rightChild?.balance == -1) {
+            rightChild = rightChild?.rotateRight() ?: return this
         }
         return this.rotateLeft()
     }
 
     private fun leftSubBalance(): Node<K, V> {
-        if (this.leftChild?.getBalanceFactor() == -1) {
-            this.leftChild = this.leftChild?.rotateLeft() ?: return this
+        if (leftChild?.balance == 1) {
+            leftChild = leftChild?.rotateLeft() ?: return this
         }
         return this.rotateRight()
     }
 
-    fun balance(): Node<K, V> {
-
-        return when (this.getBalanceFactor()) {
+    fun rebalance(): Node<K, V> {
+        return when (this.balance) {
             RIGHT_SUB_BALANCE -> this.rightSubBalance()
             LEFT_SUB_BALANCE -> this.leftSubBalance()
             else -> this
         }
     }
 
-    fun removeMin(): Node<K, V>? {
-        this.leftChild = this.leftChild?.removeMin() ?: return this.rightChild
+    private fun getNewRootFromRightSubtree(): Node<K, V> {
+        val newRoot = rightChild?.minNode ?: this
+        newRoot.rightChild = rightChild?.removeMin()
+        newRoot.leftChild = leftChild
+        newRoot.updateHeight()
+        return newRoot.rebalance()
+    }
+
+    fun deleteNode(deleteKey: K): Node<K, V>? {
+        when {
+            deleteKey < key -> leftChild = leftChild?.deleteNode(deleteKey)
+            deleteKey > key -> rightChild = rightChild?.deleteNode(deleteKey)
+            else -> return rightChild?.let { getNewRootFromRightSubtree() } ?: leftChild
+        }
+        updateHeight()
+        return rebalance()
+    }
+
+    private fun removeMin(): Node<K, V>? {
+        leftChild ?: return rightChild
+        leftChild = leftChild?.removeMin()
         this.updateHeight()
-        return this.balance()
+        return this.rebalance()
     }
 
     fun toString(separatorCount: Int): String {
         var nodeAsString = ""
-        if (this.rightChild != null) {
-            nodeAsString += this.rightChild?.toString(separatorCount + 2)
+        if (rightChild != null) {
+            nodeAsString += rightChild?.toString(separatorCount + 2)
         }
 
         nodeAsString += "${SEPARATOR_SIGN.repeat(separatorCount)}($key, $value)\n"
 
-        if (this.leftChild != null) {
-            nodeAsString += this.leftChild?.toString(separatorCount + 2)
+        if (leftChild != null) {
+            nodeAsString += leftChild?.toString(separatorCount + 2)
         }
         return nodeAsString
     }
