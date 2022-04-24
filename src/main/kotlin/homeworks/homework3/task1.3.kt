@@ -8,6 +8,8 @@ fun main() {
         tree[i] = "a"
     }
     println("Balanced tree:\n$tree")
+    tree[1] = "b"
+    println(tree.size)
     tree.remove(4)
-    println("Tree with deleted root:\n$tree")
+    println("\nTree with deleted root:\n$tree")
 }

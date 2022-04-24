@@ -56,27 +56,23 @@ class Node<K : Comparable<K>, V>(
         return this.rotateRight()
     }
 
-    fun rebalance(): Node<K, V> {
-        return when (this.balance) {
-            RIGHT_SUB_BALANCE -> this.rightSubBalance()
-            LEFT_SUB_BALANCE -> this.leftSubBalance()
-            else -> this
-        }
-    }
-
-    private fun getNewRootFromRightSubtree(): Node<K, V> {
-        val newRoot = rightChild?.minNode ?: this
-        newRoot.rightChild = rightChild?.removeMin()
-        newRoot.leftChild = leftChild
-        newRoot.updateHeight()
-        return newRoot.rebalance()
+    fun rebalance() = when (this.balance) {
+        RIGHT_SUB_BALANCE -> this.rightSubBalance()
+        LEFT_SUB_BALANCE -> this.leftSubBalance()
+        else -> this
     }
 
     fun deleteNode(deleteKey: K): Node<K, V>? {
         when {
             deleteKey < key -> leftChild = leftChild?.deleteNode(deleteKey)
             deleteKey > key -> rightChild = rightChild?.deleteNode(deleteKey)
-            else -> return rightChild?.let { getNewRootFromRightSubtree() } ?: leftChild
+            else -> return rightChild?.let {
+                val newRoot = rightChild?.minNode ?: this
+                newRoot.rightChild = rightChild?.removeMin()
+                newRoot.leftChild = leftChild
+                newRoot.updateHeight()
+                newRoot.rebalance()
+            } ?: leftChild
         }
         updateHeight()
         return rebalance()
@@ -101,5 +97,10 @@ class Node<K : Comparable<K>, V>(
             nodeAsString += leftChild?.toString(separatorCount + 2)
         }
         return nodeAsString
+    }
+
+    fun <S> traverse(lambda: (Node<K, V>) -> (S)): List<S> {
+        return listOf(lambda(this)) +
+            (leftChild?.traverse(lambda) ?: listOf()) + (rightChild?.traverse(lambda) ?: listOf())
     }
 }
