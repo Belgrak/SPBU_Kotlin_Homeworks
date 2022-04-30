@@ -9,7 +9,7 @@ fun main() {
         |reverse  -- reverse last action in the list
         |print  --  print list
         |exit  --  finish the program
-    """.trimMargin()
+        """.trimMargin()
     )
 
     val commandStorage = PerformedCommandStorage()
