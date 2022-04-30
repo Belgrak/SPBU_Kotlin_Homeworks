@@ -42,7 +42,7 @@ class AVLTree<K : Comparable<K>, V> : MutableMap<K, V> {
         return value
     }
 
-    override fun containsKey(key: K) = key in keys
+    override fun containsKey(key: K) = get(key) != null
 
     override fun containsValue(value: V) = value in values
 

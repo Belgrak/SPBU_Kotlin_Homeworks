@@ -87,20 +87,16 @@ class Node<K : Comparable<K>, V>(
 
     fun toString(separatorCount: Int): String {
         var nodeAsString = ""
-        if (rightChild != null) {
-            nodeAsString += rightChild?.toString(separatorCount + 2)
-        }
+        rightChild?.let { nodeAsString += it.toString(separatorCount + 2) }
 
         nodeAsString += "${SEPARATOR_SIGN.repeat(separatorCount)}($key, $value)\n"
 
-        if (leftChild != null) {
-            nodeAsString += leftChild?.toString(separatorCount + 2)
-        }
+        leftChild?.let { nodeAsString += it.toString(separatorCount + 2) }
         return nodeAsString
     }
 
     fun <S> traverse(lambda: (Node<K, V>) -> (S)): List<S> {
         return listOf(lambda(this)) +
-            (leftChild?.traverse(lambda) ?: listOf()) + (rightChild?.traverse(lambda) ?: listOf())
+            (leftChild?.traverse(lambda) ?: emptyList()) + (rightChild?.traverse(lambda) ?: emptyList())
     }
 }
