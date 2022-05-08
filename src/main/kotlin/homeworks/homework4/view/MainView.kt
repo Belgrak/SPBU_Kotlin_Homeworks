@@ -20,6 +20,9 @@ import androidx.compose.ui.unit.dp
 import homeworks.homework4.MIDDLE_THREAD_COUNT
 import homeworks.homework4.mergeSort
 
+const val RANGE_LIMIT = 100f
+
+@Suppress("FunctionNaming")
 @Composable
 fun MainView(
     onClickGenerateList: (Int) -> MutableList<Int>,
@@ -39,7 +42,7 @@ fun MainView(
             Slider(
                 value = listSize.toFloat(),
                 onValueChange = { listSize = it.toInt() },
-                valueRange = 0f..100f,
+                valueRange = 0f..RANGE_LIMIT,
                 onValueChangeFinished = {
                     list = onClickGenerateList(listSize)
                     listState = "Generated List: "

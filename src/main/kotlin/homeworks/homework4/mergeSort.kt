@@ -18,7 +18,7 @@ fun <E : Comparable<E>> MutableList<E>.mergeSort(count: Int = 1, coroutinesMode:
     when (count) {
         1 -> simpleSort(tempList)
         else -> when (coroutinesMode) {
-            true -> return this
+            true -> {}
             false -> multithreadedSort(count, tempList)
         }
     }
