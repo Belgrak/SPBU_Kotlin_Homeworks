@@ -18,9 +18,13 @@ class ViewModel {
         state = state.update()
     }
 
-    fun showGraphView() = updateState {
-        copy(
-            screen = Screen.ChartView
-        )
+    fun showTimeFromThreads() {
+        timeFromThreadsChart()
     }
+
+    fun showTimeFromLists() {
+        timeFromListsChart()
+    }
+
+    fun onClickGenerateList(size: Int) = generateRandomList(size)
 }

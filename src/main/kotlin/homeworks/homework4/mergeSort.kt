@@ -3,26 +3,32 @@ package homeworks.homework4
 import kotlin.math.ceil
 import kotlin.math.floor
 
-const val MIN_RANDOM_NUM = -1000000
-const val MAX_RANDOM_NUM = 1000000
-
-fun <E : Comparable<E>> MutableList<E>.mergeSort(nThreads: Int = 1): MutableList<E> {
-    require(nThreads >= 1) { "Incorrect number of threads" }
+/**
+ * count - Count of threads/coroutines. By default, it is 1.
+ * coroutinesMode - If it's true, list will be sorted by coroutines, otherwise by threads. By default, it is false.
+ *
+ * Coroutines sort will be implemented soon.
+ * */
+fun <E : Comparable<E>> MutableList<E>.mergeSort(count: Int = 1, coroutinesMode: Boolean = false): MutableList<E> {
+    require(count >= 1) { "Incorrect number of threads/coroutines" }
     if (this.size < 2) {
         return this
     }
     val tempList = this.toMutableList()
-    when (nThreads) {
+    when (count) {
         1 -> simpleSort(tempList)
-        else -> multithreadedSort(nThreads, tempList)
+        else -> when (coroutinesMode) {
+            true -> return this
+            false -> multithreadedSort(count, tempList)
+        }
     }
     return this
 }
 
 private fun <E : Comparable<E>> MutableList<E>.simpleSort(tempList: MutableList<E>) {
     val averageIndex = ceil(this.size.toFloat() / 2).toInt()
-    var firstListSorted = tempList.subList(0, averageIndex).mergeSort()
-    var secondListSorted = tempList.subList(averageIndex, this.size).mergeSort()
+    val firstListSorted = tempList.subList(0, averageIndex).mergeSort()
+    val secondListSorted = tempList.subList(averageIndex, this.size).mergeSort()
     firstListSorted.mergeWith(secondListSorted, this)
 }
 
@@ -78,9 +84,3 @@ private fun <E : Comparable<E>> MutableList<E>.mergeWith(secondList: MutableList
             }
         }
     }
-
-fun generateRandomList(size: Int, start: Int = MIN_RANDOM_NUM, end: Int = MAX_RANDOM_NUM): MutableList<Int> {
-    val randomList = mutableListOf<Int>()
-    repeat(size) { randomList.add((start..end).random()) }
-    return randomList
-}

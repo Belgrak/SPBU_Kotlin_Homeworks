@@ -19,12 +19,13 @@ internal class MergeSortKtTest {
     }
 
     companion object {
-        var list = generateRandomList(1000000)
-        var temp = list.subList(0, list.size).toMutableList()
+        private val listToExpected = mutableListOf<MutableList<Int>>().also { list ->
+            repeat(5) {
+                list.add(generateRandomList((2..100).random()))
+            }
+        }
 
         @JvmStatic
-        fun getListForSort() = listOf(
-            Arguments.of(temp, list.also { it.sort() })
-        )
+        fun getListForSort() = listToExpected.map { Arguments.of(it.subList(0, it.size), it) }
     }
 }
