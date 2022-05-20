@@ -25,7 +25,8 @@ fun getRandom(): String {
 fun getQuotes(doc: Document): String {
     val data = doc.select(".quote")
     data.forEach { it.select("br").forEach { element -> element.html("\n") } }
-    return data.mapIndexed { index, element -> "${index + 1}) ${element.wholeText()}" }.joinToString("\n\n")
+    val formatResult = data.mapIndexed { index, element -> "${index + 1}) ${element.wholeText()}" }
+    return formatResult.joinToString("\n\n")
 }
 
 fun getLast(): String {
