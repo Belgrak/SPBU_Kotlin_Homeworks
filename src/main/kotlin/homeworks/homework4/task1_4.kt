@@ -10,14 +10,15 @@ import homeworks.homework4.view.MainView
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Multithreaded & coroutines merge sort",
+        title = "Multithreaded & Asynchronous merge sort",
         state = rememberWindowState(width = 1280.dp, height = 720.dp)
     ) {
         val viewModel = remember { ViewModel() }
         MainView(
             viewModel::onClickGenerateList,
             viewModel::showTimeFromThreads,
-            viewModel::showTimeFromLists
+            viewModel::showTimeFromListsThreads,
+            viewModel::onSortClick
         )
     }
 }

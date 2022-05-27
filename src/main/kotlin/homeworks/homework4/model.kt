@@ -23,24 +23,24 @@ const val HEIGHT = 720
 const val WIDTH = 1280
 const val MIN_RANDOM_NUM = -100
 const val MAX_RANDOM_NUM = 100
-const val MIN_THREAD_COUNT = 4
-const val MIDDLE_THREAD_COUNT = 32
-const val MAX_THREAD_COUNT = 1024
-const val SMALL_THREAD_STEP = 4
-const val BIG_THREAD_STEP = 32
+const val MIN_COUNT = 4
+const val MIDDLE_COUNT = 32
+const val MAX_COUNT = 1024
+const val SMALL_STEP = 4
+const val BIG_STEP = 32
 const val VERTICAL_OFFSET = 3
 const val THREADS_CHART_NAME = "timeFromThreads.png"
-const val LISTS_CHART_NAME = "timeFromLists.png"
+const val LISTS_CHART_NAME = "timeFromListsThreads.png"
 
 fun timeFromThreadsChart() {
     val list = generateRandomList(MAX_LIST_SIZE)
     val threadsToTime = linkedMapOf<Int, Long>()
 
     threadsToTime[1] = measureTimeMillis { list.mergeSort() }
-    for (threadsCount in MIN_THREAD_COUNT..MIDDLE_THREAD_COUNT step SMALL_THREAD_STEP) {
+    for (threadsCount in MIN_COUNT..MIDDLE_COUNT step SMALL_STEP) {
         threadsToTime[threadsCount] = measureTimeMillis { list.mergeSort(threadsCount) }
     }
-    for (threadsCount in MIDDLE_THREAD_COUNT..MAX_THREAD_COUNT step BIG_THREAD_STEP) {
+    for (threadsCount in MIDDLE_COUNT..MAX_COUNT step BIG_STEP) {
         threadsToTime[threadsCount] = measureTimeMillis { list.mergeSort(threadsCount) }
     }
     val data = mapOf(
@@ -54,13 +54,13 @@ fun timeFromThreadsChart() {
     val minLine = geomHLine(yintercept = min(threadsToTime.values)) +
         geomText(
             label = "Minimum: ${minTime?.key} threads, ${minTime?.value} ms",
-            x = MAX_THREAD_COUNT / 2,
+            x = MAX_COUNT / 2,
             y = (minTime?.value ?: 0) + VERTICAL_OFFSET
         )
     val maxLine = geomHLine(yintercept = max(threadsToTime.values)) +
         geomText(
             label = "Maximum: ${maxTime?.key} threads, ${maxTime?.value} ms",
-            x = MAX_THREAD_COUNT / 2,
+            x = MAX_COUNT / 2,
             y = (maxTime?.value ?: 0) - VERTICAL_OFFSET
         )
     val style = scaleYContinuous(format = "{} ms") + scaleXContinuous(breaks = threadsToTime.keys.toList()) +
@@ -74,10 +74,10 @@ fun timeFromThreadsChart() {
     Desktop.getDesktop().browse(file.toURI())
 }
 
-fun timeFromListsChart() {
+fun timeFromListsChartThreads() {
     val listsToTime = linkedMapOf<Int, Long>()
     for (listSize in MIN_LIST_SIZE..MAX_LIST_SIZE step LIST_STEP) {
-        listsToTime[listSize] = measureTimeMillis { generateRandomList(listSize).mergeSort(MIDDLE_THREAD_COUNT) }
+        listsToTime[listSize] = measureTimeMillis { generateRandomList(listSize).mergeSort(MIDDLE_COUNT) }
     }
     val data = mapOf(
         "ListSize" to listsToTime.keys,
@@ -102,7 +102,7 @@ fun timeFromListsChart() {
     val style = scaleYContinuous(format = "{} ms") + scaleXContinuous(breaks = listsToTime.keys.toList()) +
         ggsize(WIDTH, HEIGHT) + labs(
         title = "Multithreaded merge sort",
-        subtitle = "Time dependence on list size chart. Threads count = $MIDDLE_THREAD_COUNT"
+        subtitle = "Time dependence on list size chart. Threads count = $MIDDLE_COUNT"
     )
 
     val plot = letsPlot(data) { x = "ListSize"; y = "Time" } + plotLine + minLine + maxLine + style

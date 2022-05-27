@@ -17,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import homeworks.homework4.MIDDLE_THREAD_COUNT
-import homeworks.homework4.mergeSort
+import homeworks.homework4.MIDDLE_COUNT
+import kotlin.reflect.KFunction3
 
 const val RANGE_LIMIT = 100f
 
@@ -27,11 +27,13 @@ const val RANGE_LIMIT = 100f
 fun MainView(
     onClickGenerateList: (Int) -> MutableList<Int>,
     onClickShowTimeThreads: () -> Unit,
-    onClickShowTimeLists: () -> Unit
+    onClickShowTimeLists: () -> Unit,
+    onClickGetResult: KFunction3<MutableList<Int>, Int, Boolean, Unit>
 ) {
     var listSize by remember { mutableStateOf(0) }
     var list by remember { mutableStateOf(mutableListOf<Int>()) }
     var listState by remember { mutableStateOf("Generated List: ") }
+    val asynchronousSort by remember { mutableStateOf(false) }
     MaterialTheme {
         Column(
             Modifier.fillMaxSize().padding(5.dp),
@@ -52,7 +54,7 @@ fun MainView(
             Text(list.toString())
             Button(onClick = {
                 listState = "Sorted List: "
-                list.mergeSort(MIDDLE_THREAD_COUNT)
+                onClickGetResult(list, MIDDLE_COUNT, asynchronousSort)
             }) {
                 Text("GET RESULT")
             }
