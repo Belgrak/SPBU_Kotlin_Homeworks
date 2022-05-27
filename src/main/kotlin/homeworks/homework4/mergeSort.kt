@@ -1,5 +1,7 @@
 package homeworks.homework4
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -18,7 +20,7 @@ fun <E : Comparable<E>> MutableList<E>.mergeSort(count: Int = 1, asynchronousMod
     when (count) {
         1 -> simpleSort(tempList)
         else -> when (asynchronousMode) {
-            true -> {}
+            true -> asynchronousSort(count, tempList)
             false -> multithreadedSort(count, tempList)
         }
     }
@@ -49,6 +51,25 @@ private fun <E : Comparable<E>> MutableList<E>.multithreadedSort(nThreads: Int, 
     firstThread.join()
     secondThread.join()
     firstListSorted.mergeWith(secondListSorted, this)
+}
+
+private fun <E : Comparable<E>> MutableList<E>.asynchronousSort(nCoroutines: Int, tempList: MutableList<E>) {
+    val currentList = this
+    val averageIndex = ceil(this.size.toFloat() / 2).toInt()
+    val firstCountOfCoroutines = floor(nCoroutines.toFloat() / 2).toInt()
+    var firstListSorted = mutableListOf<E>()
+    var secondListSorted = mutableListOf<E>()
+    runBlocking {
+        val firstCoroutine =
+            launch { firstListSorted = tempList.subList(0, averageIndex).mergeSort(firstCountOfCoroutines) }
+        val secondCoroutine = launch {
+            secondListSorted =
+                tempList.subList(averageIndex, currentList.size).mergeSort(nCoroutines - firstCountOfCoroutines)
+        }
+        firstCoroutine.join()
+        secondCoroutine.join()
+        firstListSorted.mergeWith(secondListSorted, currentList)
+    }
 }
 
 private fun <E : Comparable<E>> MutableList<E>.mergeWith(secondList: MutableList<E>, destination: MutableList<E>) =

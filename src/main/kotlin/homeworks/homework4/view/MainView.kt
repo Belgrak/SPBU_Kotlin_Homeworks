@@ -2,11 +2,13 @@ package homeworks.homework4.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import homeworks.homework4.MIDDLE_COUNT
+import kotlin.reflect.KFunction1
 import kotlin.reflect.KFunction3
 
 const val RANGE_LIMIT = 100f
@@ -27,13 +31,14 @@ const val RANGE_LIMIT = 100f
 fun MainView(
     onClickGenerateList: (Int) -> MutableList<Int>,
     onClickShowTimeThreads: () -> Unit,
-    onClickShowTimeLists: () -> Unit,
+    onClickShowTimeLists: KFunction1<Boolean, Unit>,
+    onClickShowTimeCoroutines: () -> Unit,
     onClickGetResult: KFunction3<MutableList<Int>, Int, Boolean, Unit>
 ) {
     var listSize by remember { mutableStateOf(0) }
     var list by remember { mutableStateOf(mutableListOf<Int>()) }
     var listState by remember { mutableStateOf("Generated List: ") }
-    val asynchronousSort by remember { mutableStateOf(false) }
+    var asynchronousSort by remember { mutableStateOf(false) }
     MaterialTheme {
         Column(
             Modifier.fillMaxSize().padding(5.dp),
@@ -52,6 +57,16 @@ fun MainView(
             )
             Text(listState, fontWeight = FontWeight.Bold)
             Text(list.toString())
+            Row(modifier = Modifier.padding(10.dp)) {
+                Text("Multithreaded sort", fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                Switch(asynchronousSort, onCheckedChange = {
+                    asynchronousSort = when (asynchronousSort) {
+                        true -> false
+                        else -> true
+                    }
+                })
+                Text("Asynchronous sort", fontSize = 20.sp, fontWeight = FontWeight.Medium)
+            }
             Button(onClick = {
                 listState = "Sorted List: "
                 onClickGetResult(list, MIDDLE_COUNT, asynchronousSort)
@@ -61,8 +76,14 @@ fun MainView(
             Button(onClick = onClickShowTimeThreads) {
                 Text("Show time from threads chart")
             }
-            Button(onClick = onClickShowTimeLists) {
-                Text("Show time from lists size chart")
+            Button(onClick = { onClickShowTimeLists(false) }) {
+                Text("Show time from lists size chart(threads)")
+            }
+            Button(onClick = onClickShowTimeCoroutines) {
+                Text("Show time from coroutines chart")
+            }
+            Button(onClick = { onClickShowTimeLists(true) }) {
+                Text("Show time from lists size chart(coroutines)")
             }
         }
     }

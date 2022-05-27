@@ -17,7 +17,8 @@ fun main() = application {
         MainView(
             viewModel::onClickGenerateList,
             viewModel::showTimeFromThreads,
-            viewModel::showTimeFromListsThreads,
+            viewModel::showTimeFromLists,
+            viewModel::showTimeFromCoroutines,
             viewModel::onSortClick
         )
     }
