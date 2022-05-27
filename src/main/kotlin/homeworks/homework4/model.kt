@@ -18,7 +18,7 @@ import kotlin.system.measureTimeMillis
 
 const val MIN_LIST_SIZE = 10
 const val MAX_LIST_SIZE = 1000000
-const val LIST_STEP = 1000
+const val LIST_STEP = 5000
 const val HEIGHT = 720
 const val WIDTH = 1280
 const val MIN_RANDOM_NUM = -100
