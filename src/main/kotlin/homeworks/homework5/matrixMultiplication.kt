@@ -3,27 +3,9 @@ package homeworks.homework5
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-fun MutableList<MutableList<Int>>.getRowsSize() = when {
-    size != 0 -> {
-        if (first().size == 0) {
-            0
-        } else {
-            size
-        }
-    }
-    else -> size
-}
+fun MutableList<MutableList<Int>>.getRowsSize() = if (firstOrNull()?.isNotEmpty() == true) size else 0
 
-fun MutableList<MutableList<Int>>.getColumnsSize() = when {
-    size != 0 -> {
-        if (first().size == 0) {
-            0
-        } else {
-            first().size
-        }
-    }
-    else -> 0
-}
+fun MutableList<MutableList<Int>>.getColumnsSize() = firstOrNull()?.size ?: 0
 
 fun multiplyMatrix(
     firstMatrix: MutableList<MutableList<Int>>,
@@ -42,19 +24,4 @@ fun multiplyMatrix(
         }
     }
     return multiplicationResult
-}
-
-@Suppress("MagicNumber")
-fun main() {
-    val firstMatrix = mutableListOf(
-        mutableListOf(1, 2, 3),
-        mutableListOf(4, 5, 6)
-    )
-    val secondMatrix = mutableListOf(
-        mutableListOf(1, 2, 3),
-        mutableListOf(4, 5, 6),
-        mutableListOf(7, 8, 9)
-    )
-    val result = multiplyMatrix(firstMatrix, secondMatrix)
-    println(result)
 }
