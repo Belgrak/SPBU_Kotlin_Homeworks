@@ -1,5 +1,21 @@
 package homeworks.homework4
 
+import homeworks.homework4.ConstsAndSettings.BIG_STEP
+import homeworks.homework4.ConstsAndSettings.HEIGHT
+import homeworks.homework4.ConstsAndSettings.LISTS_CHART_NAME_COROUTINES
+import homeworks.homework4.ConstsAndSettings.LISTS_CHART_NAME_THREADS
+import homeworks.homework4.ConstsAndSettings.LIST_STEP
+import homeworks.homework4.ConstsAndSettings.MAX_COUNT
+import homeworks.homework4.ConstsAndSettings.MAX_LIST_SIZE
+import homeworks.homework4.ConstsAndSettings.MAX_RANDOM_NUM
+import homeworks.homework4.ConstsAndSettings.MIDDLE_COUNT
+import homeworks.homework4.ConstsAndSettings.MIN_COUNT
+import homeworks.homework4.ConstsAndSettings.MIN_LIST_SIZE
+import homeworks.homework4.ConstsAndSettings.MIN_RANDOM_NUM
+import homeworks.homework4.ConstsAndSettings.SMALL_STEP
+import homeworks.homework4.ConstsAndSettings.THREADS_CHART_NAME
+import homeworks.homework4.ConstsAndSettings.VERTICAL_OFFSET
+import homeworks.homework4.ConstsAndSettings.WIDTH
 import jetbrains.letsPlot.export.ggsave
 import jetbrains.letsPlot.geom.geomHLine
 import jetbrains.letsPlot.geom.geomLine
@@ -15,22 +31,6 @@ import java.io.File
 import java.util.Collections.max
 import java.util.Collections.min
 import kotlin.system.measureTimeMillis
-
-const val MIN_LIST_SIZE = 10
-const val MAX_LIST_SIZE = 1000000
-const val LIST_STEP = 5000
-const val HEIGHT = 720
-const val WIDTH = 1280
-const val MIN_RANDOM_NUM = -100
-const val MAX_RANDOM_NUM = 100
-const val MIN_COUNT = 4
-const val MIDDLE_COUNT = 32
-const val MAX_COUNT = 1024
-const val SMALL_STEP = 4
-const val BIG_STEP = 32
-const val VERTICAL_OFFSET = 3
-const val THREADS_CHART_NAME = "timeFromThreads.png"
-const val LISTS_CHART_NAME = "timeFromListsThreads.png"
 
 fun timeFromThreadsChart() {
     val list = generateRandomList(MAX_LIST_SIZE)
@@ -74,10 +74,10 @@ fun timeFromThreadsChart() {
     Desktop.getDesktop().browse(file.toURI())
 }
 
-fun timeFromListsChartThreads() {
+fun timeFromListsChart(sortMode: SortMode) {
     val listsToTime = linkedMapOf<Int, Long>()
     for (listSize in MIN_LIST_SIZE..MAX_LIST_SIZE step LIST_STEP) {
-        listsToTime[listSize] = measureTimeMillis { generateRandomList(listSize).mergeSort(MIDDLE_COUNT) }
+        listsToTime[listSize] = measureTimeMillis { generateRandomList(listSize).mergeSort(MIDDLE_COUNT, sortMode) }
     }
     val data = mapOf(
         "ListSize" to listsToTime.keys,
@@ -99,14 +99,24 @@ fun timeFromListsChartThreads() {
             x = MAX_LIST_SIZE / 2,
             y = (maxTime?.value ?: 0) - VERTICAL_OFFSET
         )
+    val titleAndSubtitle = when (sortMode) {
+        SortMode.MULTITHREADED -> labs(
+            title = "Multithreaded merge sort",
+            subtitle = "Time dependence on list size chart. Threads count = $MIDDLE_COUNT"
+        )
+        SortMode.ASYNCHRONOUS -> labs(
+            title = "Asynchronous merge sort",
+            subtitle = "Time dependence on list size chart. Coroutines count = $MIDDLE_COUNT"
+        )
+    }
     val style = scaleYContinuous(format = "{} ms") + scaleXContinuous(breaks = listsToTime.keys.toList()) +
-        ggsize(WIDTH, HEIGHT) + labs(
-        title = "Multithreaded merge sort",
-        subtitle = "Time dependence on list size chart. Threads count = $MIDDLE_COUNT"
-    )
+        ggsize(WIDTH, HEIGHT) + titleAndSubtitle
 
     val plot = letsPlot(data) { x = "ListSize"; y = "Time" } + plotLine + minLine + maxLine + style
-    val path = ggsave(plot, LISTS_CHART_NAME, path = "src/main/resources")
+    val path = when (sortMode) {
+        SortMode.MULTITHREADED -> ggsave(plot, LISTS_CHART_NAME_THREADS, path = "src/main/resources")
+        SortMode.ASYNCHRONOUS -> ggsave(plot, LISTS_CHART_NAME_COROUTINES, path = "src/main/resources")
+    }
     val file = File(path)
     Desktop.getDesktop().browse(file.toURI())
 }
