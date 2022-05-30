@@ -5,8 +5,8 @@ class ViewModel {
 
     fun showTimeFromListsThreads() = timeFromListsChartThreads()
 
-    fun onSortClick(list: MutableList<Int>, count: Int, asynchronousSort: Boolean = false) {
-        list.mergeSort(count, asynchronousSort)
+    fun onSortClick(list: MutableList<Int>, count: Int, sortMode: SortMode = SortMode.MULTITHREADED) {
+        list.mergeSort(count, sortMode)
     }
 
     fun onClickGenerateList(size: Int) = generateRandomList(size)

@@ -9,23 +9,28 @@ internal class MergeSortKtTest {
     @ParameterizedTest
     @MethodSource("getListForSort")
     fun <E : Comparable<E>> simpleMergeSort(list: MutableList<E>, expected: MutableList<E>) {
-        assertEquals(expected, list.mergeSort())
+        assertEquals(expected.sorted(), list.mergeSort())
     }
 
     @ParameterizedTest
-    @MethodSource("getListForSort")
-    fun <E : Comparable<E>> multithreadedMergeSort(list: MutableList<E>, expected: MutableList<E>) {
-        assertEquals(expected, list.mergeSort(10))
+    @MethodSource("getListAndThreadsForSort")
+    fun <E : Comparable<E>> multithreadedMergeSort(list: MutableList<E>, threadsCount: Int, expected: MutableList<E>) {
+        assertEquals(expected.sorted(), list.mergeSort(threadsCount))
     }
 
     companion object {
-        private val listToExpected = mutableListOf<MutableList<Int>>().also { list ->
+        private val listToExpected = mutableListOf<Pair<MutableList<Int>, MutableList<Int>>>().also { list ->
             repeat(5) {
-                list.add(generateRandomList((2..100).random()))
+                val generatedList = generateRandomList((2..100).random())
+                list.add(
+                    Pair(generatedList.toMutableList(), generatedList)
+                )
             }
         }
 
         @JvmStatic
-        fun getListForSort() = listToExpected.map { Arguments.of(it.subList(0, it.size), it) }
+        fun getListForSort() = listToExpected.map { Arguments.of(it.first, it.second) }
+        @JvmStatic
+        fun getListAndThreadsForSort() = listToExpected.map { Arguments.of(it.first, (1..100).random(), it.second) }
     }
 }
