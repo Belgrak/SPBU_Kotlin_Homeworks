@@ -17,6 +17,8 @@ import homeworks.homework4.ConstsAndSettings.SMALL_STEP
 import homeworks.homework4.ConstsAndSettings.THREADS_CHART_NAME
 import homeworks.homework4.ConstsAndSettings.VERTICAL_OFFSET
 import homeworks.homework4.ConstsAndSettings.WIDTH
+import homeworks.homework4.mergeSort.AsynchronousMergeSort
+import homeworks.homework4.mergeSort.MultithreadedMergeSort
 import jetbrains.letsPlot.export.ggsave
 import jetbrains.letsPlot.geom.geomHLine
 import jetbrains.letsPlot.geom.geomLine
@@ -37,12 +39,12 @@ fun timeFromThreadsChart() {
     val list = generateRandomList(MAX_LIST_SIZE)
     val threadsToTime = linkedMapOf<Int, Long>()
 
-    threadsToTime[1] = measureTimeMillis { list.mergeSort() }
+    threadsToTime[1] = measureTimeMillis { MultithreadedMergeSort(list, 1).sort() }
     for (threadsCount in MIN_COUNT..MIDDLE_COUNT step SMALL_STEP) {
-        threadsToTime[threadsCount] = measureTimeMillis { list.mergeSort(threadsCount) }
+        threadsToTime[threadsCount] = measureTimeMillis { MultithreadedMergeSort(list, threadsCount).sort() }
     }
     for (threadsCount in MIDDLE_COUNT..MAX_COUNT step BIG_STEP) {
-        threadsToTime[threadsCount] = measureTimeMillis { list.mergeSort(threadsCount) }
+        threadsToTime[threadsCount] = measureTimeMillis { MultithreadedMergeSort(list, threadsCount).sort() }
     }
     val data = mapOf(
         "Threads" to threadsToTime.keys,
@@ -78,7 +80,21 @@ fun timeFromThreadsChart() {
 fun timeFromListsChart(sortMode: SortMode) {
     val listsToTime = linkedMapOf<Int, Long>()
     for (listSize in MIN_LIST_SIZE..MAX_LIST_SIZE step LIST_STEP) {
-        listsToTime[listSize] = measureTimeMillis { generateRandomList(listSize).mergeSort(MIDDLE_COUNT, sortMode) }
+        listsToTime[listSize] =
+            when (sortMode) {
+                SortMode.MULTITHREADED -> measureTimeMillis {
+                    MultithreadedMergeSort(
+                        generateRandomList(listSize),
+                        MIDDLE_COUNT
+                    ).sort()
+                }
+                SortMode.ASYNCHRONOUS -> measureTimeMillis {
+                    AsynchronousMergeSort(
+                        generateRandomList(listSize),
+                        MIDDLE_COUNT
+                    ).sort()
+                }
+            }
     }
     val data = mapOf(
         "ListSize" to listsToTime.keys,
@@ -126,12 +142,12 @@ fun timeFromCoroutinesChart() {
     val list = generateRandomList(MAX_LIST_SIZE)
     val coroutinesToTime = linkedMapOf<Int, Long>()
 
-    coroutinesToTime[1] = measureTimeMillis { list.mergeSort() }
+    coroutinesToTime[1] = measureTimeMillis { AsynchronousMergeSort(list, 1).sort() }
     for (coroutinesCount in MIN_COUNT..MIDDLE_COUNT step SMALL_STEP) {
-        coroutinesToTime[coroutinesCount] = measureTimeMillis { list.mergeSort(coroutinesCount, SortMode.ASYNCHRONOUS) }
+        coroutinesToTime[coroutinesCount] = measureTimeMillis { AsynchronousMergeSort(list, coroutinesCount).sort() }
     }
     for (coroutinesCount in MIDDLE_COUNT..MAX_COUNT step BIG_STEP) {
-        coroutinesToTime[coroutinesCount] = measureTimeMillis { list.mergeSort(coroutinesCount, SortMode.ASYNCHRONOUS) }
+        coroutinesToTime[coroutinesCount] = measureTimeMillis { AsynchronousMergeSort(list, coroutinesCount).sort() }
     }
     val data = mapOf(
         "Coroutines" to coroutinesToTime.keys,
