@@ -1,6 +1,7 @@
 package homeworks.homework4
 
 import homeworks.homework4.ConstsAndSettings.BIG_STEP
+import homeworks.homework4.ConstsAndSettings.COROUTINES_CHART_NAME
 import homeworks.homework4.ConstsAndSettings.HEIGHT
 import homeworks.homework4.ConstsAndSettings.LISTS_CHART_NAME_COROUTINES
 import homeworks.homework4.ConstsAndSettings.LISTS_CHART_NAME_THREADS
@@ -127,10 +128,10 @@ fun timeFromCoroutinesChart() {
 
     coroutinesToTime[1] = measureTimeMillis { list.mergeSort() }
     for (coroutinesCount in MIN_COUNT..MIDDLE_COUNT step SMALL_STEP) {
-        coroutinesToTime[coroutinesCount] = measureTimeMillis { list.mergeSort(coroutinesCount, true) }
+        coroutinesToTime[coroutinesCount] = measureTimeMillis { list.mergeSort(coroutinesCount, SortMode.ASYNCHRONOUS) }
     }
     for (coroutinesCount in MIDDLE_COUNT..MAX_COUNT step BIG_STEP) {
-        coroutinesToTime[coroutinesCount] = measureTimeMillis { list.mergeSort(coroutinesCount, true) }
+        coroutinesToTime[coroutinesCount] = measureTimeMillis { list.mergeSort(coroutinesCount, SortMode.ASYNCHRONOUS) }
     }
     val data = mapOf(
         "Coroutines" to coroutinesToTime.keys,
@@ -141,19 +142,19 @@ fun timeFromCoroutinesChart() {
 
     val plotLine = geomLine(color = "red", tooltips = layerTooltips().format("Time", "{} ms"))
     val minLine = geomHLine(yintercept = min(coroutinesToTime.values)) +
-            geomText(
-                label = "Minimum: ${minTime?.key} coroutines, ${minTime?.value} ms",
-                x = MAX_COUNT / 2,
-                y = (minTime?.value ?: 0) + VERTICAL_OFFSET
-            )
+        geomText(
+            label = "Minimum: ${minTime?.key} coroutines, ${minTime?.value} ms",
+            x = MAX_COUNT / 2,
+            y = (minTime?.value ?: 0) + VERTICAL_OFFSET
+        )
     val maxLine = geomHLine(yintercept = max(coroutinesToTime.values)) +
-            geomText(
-                label = "Maximum: ${maxTime?.key} coroutines, ${maxTime?.value} ms",
-                x = MAX_COUNT / 2,
-                y = (maxTime?.value ?: 0) - VERTICAL_OFFSET
-            )
+        geomText(
+            label = "Maximum: ${maxTime?.key} coroutines, ${maxTime?.value} ms",
+            x = MAX_COUNT / 2,
+            y = (maxTime?.value ?: 0) - VERTICAL_OFFSET
+        )
     val style = scaleYContinuous(format = "{} ms") + scaleXContinuous(breaks = coroutinesToTime.keys.toList()) +
-            ggsize(WIDTH, HEIGHT) + labs(
+        ggsize(WIDTH, HEIGHT) + labs(
         title = "Asynchronous merge sort",
         subtitle = "Time dependence on coroutines count chart. List size = $MAX_LIST_SIZE"
     )
@@ -168,4 +169,3 @@ fun generateRandomList(size: Int, start: Int = MIN_RANDOM_NUM, end: Int = MAX_RA
     repeat(size) { randomList.add((start..end).random()) }
     return randomList
 }
-

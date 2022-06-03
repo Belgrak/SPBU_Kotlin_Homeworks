@@ -13,9 +13,19 @@ internal class MergeSortKtTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getListAndThreadsForSort")
+    @MethodSource("getDataThreadsAndCoroutines")
     fun <E : Comparable<E>> multithreadedMergeSort(list: MutableList<E>, threadsCount: Int, expected: MutableList<E>) {
         assertEquals(expected.sorted(), list.mergeSort(threadsCount))
+    }
+
+    @ParameterizedTest
+    @MethodSource("getDataThreadsAndCoroutines")
+    fun <E : Comparable<E>> asynchronousMergeSort(
+        list: MutableList<E>,
+        coroutinesCount: Int,
+        expected: MutableList<E>
+    ) {
+        assertEquals(expected.sorted(), list.mergeSort(coroutinesCount, SortMode.ASYNCHRONOUS))
     }
 
     companion object {
@@ -30,7 +40,9 @@ internal class MergeSortKtTest {
 
         @JvmStatic
         fun getListForSort() = listToExpected.map { Arguments.of(it.first, it.second) }
+
         @JvmStatic
-        fun getListAndThreadsForSort() = listToExpected.map { Arguments.of(it.first, (1..100).random(), it.second) }
+        fun getDataThreadsAndCoroutines() =
+            listToExpected.map { Arguments.of(it.first, (1..100).random(), it.second) }
     }
 }

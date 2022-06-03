@@ -20,6 +20,7 @@ object ConstsAndSettings {
     const val BIG_STEP = 32
     const val VERTICAL_OFFSET = 3
     const val THREADS_CHART_NAME = "timeFromThreads.png"
+    const val COROUTINES_CHART_NAME = "timeFromCoroutines.png"
     const val LISTS_CHART_NAME_THREADS = "timeFromListsThreads.png"
     const val LISTS_CHART_NAME_COROUTINES = "timeFromListsCoroutines.png"
 }

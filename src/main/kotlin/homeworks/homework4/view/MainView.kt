@@ -13,12 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import homeworks.homework4.SortMode
+import kotlin.reflect.KFunction1
 
 @Suppress("FunctionNaming")
 @Composable
 fun MainView(
     onClickShowTimeThreads: () -> Unit,
-    onClickShowTimeLists: () -> Unit
+    onClickShowTimeLists: KFunction1<SortMode, Unit>,
+    onClickShowTimeCoroutines: () -> Unit
 ) {
     MaterialTheme {
         Column(
@@ -35,8 +38,14 @@ fun MainView(
             Button(onClick = onClickShowTimeThreads) {
                 Text("Time from threads chart")
             }
-            Button(onClick = onClickShowTimeLists) {
+            Button(onClick = { onClickShowTimeLists(SortMode.MULTITHREADED) }) {
                 Text("Time from lists size chart (Threads)")
+            }
+            Button(onClick = onClickShowTimeCoroutines) {
+                Text("Time from coroutines chart")
+            }
+            Button(onClick = { onClickShowTimeLists(SortMode.ASYNCHRONOUS) }) {
+                Text("Time from lists size chart (Coroutines)")
             }
         }
     }
