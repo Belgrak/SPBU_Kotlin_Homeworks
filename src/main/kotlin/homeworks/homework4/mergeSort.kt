@@ -11,7 +11,10 @@ import kotlin.math.floor
  *
  * Coroutines sort will be implemented soon.
  * */
-fun <E : Comparable<E>> MutableList<E>.mergeSort(count: Int = 1, asynchronousMode: Boolean = false): MutableList<E> {
+fun <E : Comparable<E>> MutableList<E>.mergeSort(
+    count: Int = 1,
+    sortMode: SortMode = SortMode.MULTITHREADED
+): MutableList<E> {
     require(count >= 1) { "Incorrect number of threads/coroutines" }
     if (this.size < 2) {
         return this
@@ -19,9 +22,9 @@ fun <E : Comparable<E>> MutableList<E>.mergeSort(count: Int = 1, asynchronousMod
     val tempList = this.toMutableList()
     when (count) {
         1 -> simpleSort(tempList)
-        else -> when (asynchronousMode) {
-            true -> asynchronousSort(count, tempList)
-            false -> multithreadedSort(count, tempList)
+        else -> when (sortMode) {
+            SortMode.ASYNCHRONOUS -> asynchronousSort(count, tempList)
+            SortMode.MULTITHREADED -> multithreadedSort(count, tempList)
         }
     }
     return this

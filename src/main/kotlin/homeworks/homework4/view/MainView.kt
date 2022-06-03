@@ -2,88 +2,41 @@ package homeworks.homework4.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Slider
-import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import homeworks.homework4.MIDDLE_COUNT
-import kotlin.reflect.KFunction1
-import kotlin.reflect.KFunction3
-
-const val RANGE_LIMIT = 100f
 
 @Suppress("FunctionNaming")
 @Composable
 fun MainView(
-    onClickGenerateList: (Int) -> MutableList<Int>,
     onClickShowTimeThreads: () -> Unit,
-    onClickShowTimeLists: KFunction1<Boolean, Unit>,
-    onClickShowTimeCoroutines: () -> Unit,
-    onClickGetResult: KFunction3<MutableList<Int>, Int, Boolean, Unit>
+    onClickShowTimeLists: () -> Unit
 ) {
-    var listSize by remember { mutableStateOf(0) }
-    var list by remember { mutableStateOf(mutableListOf<Int>()) }
-    var listState by remember { mutableStateOf("Generated List: ") }
-    var asynchronousSort by remember { mutableStateOf(false) }
     MaterialTheme {
         Column(
-            Modifier.fillMaxSize().padding(5.dp),
-            Arrangement.spacedBy(5.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize().padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "List size: $listSize", fontWeight = FontWeight.Bold)
-            Slider(
-                value = listSize.toFloat(),
-                onValueChange = { listSize = it.toInt() },
-                valueRange = 0f..RANGE_LIMIT,
-                onValueChangeFinished = {
-                    list = onClickGenerateList(listSize)
-                    listState = "Generated List: "
-                }
+            Text(
+                "Merge Sort Charts",
+                fontWeight = FontWeight.Bold,
+                fontSize = 40.sp,
+                modifier = Modifier.padding(50.dp)
             )
-            Text(listState, fontWeight = FontWeight.Bold)
-            Text(list.toString())
-            Row(modifier = Modifier.padding(10.dp)) {
-                Text("Multithreaded sort", fontSize = 20.sp, fontWeight = FontWeight.Medium)
-                Switch(asynchronousSort, onCheckedChange = {
-                    asynchronousSort = when (asynchronousSort) {
-                        true -> false
-                        else -> true
-                    }
-                })
-                Text("Asynchronous sort", fontSize = 20.sp, fontWeight = FontWeight.Medium)
-            }
-            Button(onClick = {
-                listState = "Sorted List: "
-                onClickGetResult(list, MIDDLE_COUNT, asynchronousSort)
-            }) {
-                Text("GET RESULT")
-            }
             Button(onClick = onClickShowTimeThreads) {
-                Text("Show time from threads chart")
+                Text("Time from threads chart")
             }
-            Button(onClick = { onClickShowTimeLists(false) }) {
-                Text("Show time from lists size chart(threads)")
-            }
-            Button(onClick = onClickShowTimeCoroutines) {
-                Text("Show time from coroutines chart")
-            }
-            Button(onClick = { onClickShowTimeLists(true) }) {
-                Text("Show time from lists size chart(coroutines)")
+            Button(onClick = onClickShowTimeLists) {
+                Text("Time from lists size chart (Threads)")
             }
         }
     }
