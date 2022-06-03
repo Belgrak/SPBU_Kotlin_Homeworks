@@ -1,6 +1,7 @@
 package homeworks.homework4
 
 import homeworks.homework4.ConstsAndSettings.BIG_STEP
+import homeworks.homework4.ConstsAndSettings.COROUTINES_CHART_NAME
 import homeworks.homework4.ConstsAndSettings.HEIGHT
 import homeworks.homework4.ConstsAndSettings.LISTS_CHART_NAME_COROUTINES
 import homeworks.homework4.ConstsAndSettings.LISTS_CHART_NAME_THREADS
@@ -16,6 +17,8 @@ import homeworks.homework4.ConstsAndSettings.SMALL_STEP
 import homeworks.homework4.ConstsAndSettings.THREADS_CHART_NAME
 import homeworks.homework4.ConstsAndSettings.VERTICAL_OFFSET
 import homeworks.homework4.ConstsAndSettings.WIDTH
+import homeworks.homework4.mergeSort.AsynchronousMergeSort
+import homeworks.homework4.mergeSort.MultithreadedMergeSort
 import jetbrains.letsPlot.export.ggsave
 import jetbrains.letsPlot.geom.geomHLine
 import jetbrains.letsPlot.geom.geomLine
@@ -36,12 +39,12 @@ fun timeFromThreadsChart() {
     val list = generateRandomList(MAX_LIST_SIZE)
     val threadsToTime = linkedMapOf<Int, Long>()
 
-    threadsToTime[1] = measureTimeMillis { list.mergeSort() }
+    threadsToTime[1] = measureTimeMillis { MultithreadedMergeSort(list, 1).sort() }
     for (threadsCount in MIN_COUNT..MIDDLE_COUNT step SMALL_STEP) {
-        threadsToTime[threadsCount] = measureTimeMillis { list.mergeSort(threadsCount) }
+        threadsToTime[threadsCount] = measureTimeMillis { MultithreadedMergeSort(list, threadsCount).sort() }
     }
     for (threadsCount in MIDDLE_COUNT..MAX_COUNT step BIG_STEP) {
-        threadsToTime[threadsCount] = measureTimeMillis { list.mergeSort(threadsCount) }
+        threadsToTime[threadsCount] = measureTimeMillis { MultithreadedMergeSort(list, threadsCount).sort() }
     }
     val data = mapOf(
         "Threads" to threadsToTime.keys,
@@ -77,7 +80,21 @@ fun timeFromThreadsChart() {
 fun timeFromListsChart(sortMode: SortMode) {
     val listsToTime = linkedMapOf<Int, Long>()
     for (listSize in MIN_LIST_SIZE..MAX_LIST_SIZE step LIST_STEP) {
-        listsToTime[listSize] = measureTimeMillis { generateRandomList(listSize).mergeSort(MIDDLE_COUNT, sortMode) }
+        listsToTime[listSize] =
+            when (sortMode) {
+                SortMode.MULTITHREADED -> measureTimeMillis {
+                    MultithreadedMergeSort(
+                        generateRandomList(listSize),
+                        MIDDLE_COUNT
+                    ).sort()
+                }
+                SortMode.ASYNCHRONOUS -> measureTimeMillis {
+                    AsynchronousMergeSort(
+                        generateRandomList(listSize),
+                        MIDDLE_COUNT
+                    ).sort()
+                }
+            }
     }
     val data = mapOf(
         "ListSize" to listsToTime.keys,
@@ -117,6 +134,48 @@ fun timeFromListsChart(sortMode: SortMode) {
         SortMode.MULTITHREADED -> ggsave(plot, LISTS_CHART_NAME_THREADS, path = "src/main/resources")
         SortMode.ASYNCHRONOUS -> ggsave(plot, LISTS_CHART_NAME_COROUTINES, path = "src/main/resources")
     }
+    val file = File(path)
+    Desktop.getDesktop().browse(file.toURI())
+}
+
+fun timeFromCoroutinesChart() {
+    val list = generateRandomList(MAX_LIST_SIZE)
+    val coroutinesToTime = linkedMapOf<Int, Long>()
+
+    coroutinesToTime[1] = measureTimeMillis { AsynchronousMergeSort(list, 1).sort() }
+    for (coroutinesCount in MIN_COUNT..MIDDLE_COUNT step SMALL_STEP) {
+        coroutinesToTime[coroutinesCount] = measureTimeMillis { AsynchronousMergeSort(list, coroutinesCount).sort() }
+    }
+    for (coroutinesCount in MIDDLE_COUNT..MAX_COUNT step BIG_STEP) {
+        coroutinesToTime[coroutinesCount] = measureTimeMillis { AsynchronousMergeSort(list, coroutinesCount).sort() }
+    }
+    val data = mapOf(
+        "Coroutines" to coroutinesToTime.keys,
+        "Time" to coroutinesToTime.values
+    )
+    val maxTime = coroutinesToTime.maxByOrNull { it.value }
+    val minTime = coroutinesToTime.minByOrNull { it.value }
+
+    val plotLine = geomLine(color = "red", tooltips = layerTooltips().format("Time", "{} ms"))
+    val minLine = geomHLine(yintercept = min(coroutinesToTime.values)) +
+        geomText(
+            label = "Minimum: ${minTime?.key} coroutines, ${minTime?.value} ms",
+            x = MAX_COUNT / 2,
+            y = (minTime?.value ?: 0) + VERTICAL_OFFSET
+        )
+    val maxLine = geomHLine(yintercept = max(coroutinesToTime.values)) +
+        geomText(
+            label = "Maximum: ${maxTime?.key} coroutines, ${maxTime?.value} ms",
+            x = MAX_COUNT / 2,
+            y = (maxTime?.value ?: 0) - VERTICAL_OFFSET
+        )
+    val style = scaleYContinuous(format = "{} ms") + scaleXContinuous(breaks = coroutinesToTime.keys.toList()) +
+        ggsize(WIDTH, HEIGHT) + labs(
+        title = "Asynchronous merge sort",
+        subtitle = "Time dependence on coroutines count chart. List size = $MAX_LIST_SIZE"
+    )
+    val plot = letsPlot(data) { x = "Coroutines"; y = "Time" } + plotLine + minLine + maxLine + style
+    val path = ggsave(plot, COROUTINES_CHART_NAME, path = "src/main/resources")
     val file = File(path)
     Desktop.getDesktop().browse(file.toURI())
 }

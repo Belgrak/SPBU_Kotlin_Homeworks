@@ -16,7 +16,8 @@ fun main() = application {
         val viewModel = remember { ViewModel() }
         MainView(
             viewModel::showTimeFromThreads,
-            viewModel::showTimeFromLists
+            viewModel::showTimeFromLists,
+            viewModel::showTimeFromCoroutines
         )
     }
 }
